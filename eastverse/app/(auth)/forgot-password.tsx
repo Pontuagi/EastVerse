@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
-import { Link, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Link, useRouter } from 'expo-router';
+import {
+  Container,
+  ScrollContainer,
+  InnerContainer,
+  HeaderContainer,
+  BackButton,
+  HeaderText,
+  EmailInputContainer,
+  EmailInput,
+  ResetButton,
+  ResetButtonText,
+  FooterContainer,
+  FooterText,
+  SignInLink,
+} from './forgot-password.styles';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -13,52 +27,43 @@ export default function ForgotPassword() {
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-white"
-    >
-      <View className="p-5">
-        {/* Header */}
-        <View className="flex-row items-center mb-8">
-          <Pressable onPress={() => router.back()} className="p-2">
-            <Ionicons name="chevron-back" size={24} color="#000" />
-          </Pressable>
-          <Text className="text-xl font-semibold text-center flex-1 mr-8">
-            Forgot Password?
-          </Text>
-        </View>
+    <Container>
+      <ScrollContainer>
+        <InnerContainer>
+          {/* Header */}
+          <HeaderContainer>
+            <BackButton onPress={() => router.back()}>
+              <Ionicons name="chevron-back" size={24} color="#000" />
+            </BackButton>
+            <HeaderText>Forgot Password?</HeaderText>
+          </HeaderContainer>
 
-        {/* Email Input */}
-        <View className="bg-gray-50 rounded-lg flex-row items-center px-4 py-3 mb-6">
-          <Ionicons name="mail-outline" size={20} color="#666" />
-          <TextInput
-            className="flex-1 ml-2 text-base"
-            placeholder="Enter your email"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-        </View>
+          {/* Email Input */}
+          <EmailInputContainer>
+            <Ionicons name="mail-outline" size={20} color="#666" />
+            <EmailInput
+              placeholder="Enter your email"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+          </EmailInputContainer>
 
-        {/* Request Reset Button */}
-        <Pressable 
-          onPress={handleRequestReset}
-          className="bg-blue-500 rounded-lg py-3.5"
-        >
-          <Text className="text-white text-center font-semibold text-lg">
-            Request Reset
-          </Text>
-        </Pressable>
+          {/* Request Reset Button */}
+          <ResetButton onPress={handleRequestReset}>
+            <ResetButtonText>Request Reset</ResetButtonText>
+          </ResetButton>
 
-        {/* Remember Password Link */}
-        <View className="flex-row justify-center mt-4">
-          <Text className="text-gray-600">Remembered Password? </Text>
-          <Link href="./login" className="text-blue-500 font-semibold">
-            Sign In
-          </Link>
-        </View>
-      </View>
-    </KeyboardAvoidingView>
+          {/* Remember Password Link */}
+          <FooterContainer>
+            <FooterText>Remembered Password? </FooterText>
+            <Link href="./login" asChild>
+              <SignInLink>Sign In</SignInLink>
+            </Link>
+          </FooterContainer>
+        </InnerContainer>
+      </ScrollContainer>
+    </Container>
   );
 }
