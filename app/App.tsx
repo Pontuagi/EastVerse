@@ -1,8 +1,23 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { eacCountries } from './constants/eacCountries';
+import { View, Text, Dimensions, TouchableOpacity } from 'react-native';
+import { eacCountries, EACCountry } from './constants/eacCountries';
+import { features, statistics, testimonials } from './constants/appData';
+import {
+  Layout,
+  Logo,
+  Button,
+  Card,
+  CountryCard,
+  FeatureCard,
+  StatisticCard,
+  SectionHeader,
+  InputField,
+  HeroGradient,
+  GradientCard,
+  TestimonialCard,
+} from './components';
 import './global.css';
+
 const { width } = Dimensions.get('window');
 const isWeb = width > 768;
 
@@ -12,6 +27,7 @@ export default function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState<EACCountry | null>(null);
 
   const resetForms = () => {
     setEmail('');
@@ -21,161 +37,226 @@ export default function App() {
     setShowSignup(false);
   };
 
+  const handleCountryPress = (country: EACCountry) => {
+    setSelectedCountry(country);
+    // Add logic here for country details or navigation
+    console.log(`Selected country: ${country.name}`);
+  };
+
   if (showLogin || showSignup) {
     return (
-      <View className="flex-1 bg-gray-100">
-        <StatusBar style="dark" />
-        <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
-          <View className={`flex-1 justify-center px-4 py-8 ${isWeb ? 'max-w-lg mx-auto' : ''}`}>
-            <View className="bg-white rounded-xl shadow-lg p-6">
-              <TouchableOpacity 
-                onPress={resetForms}
-                className="absolute top-2 left-2 p-2"
-              >
-                <Text className="text-xl text-gray-600">←</Text>
-              </TouchableOpacity>
-              
-              <View className="items-center mb-6">
-                <View className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mb-3">
-                  <Text className="text-white text-lg font-bold">EV</Text>
-                </View>
-                <Text className="text-2xl font-semibold text-gray-800">
-                  {showLogin ? 'Sign In' : 'Get Started'}
-                </Text>
-                <Text className="text-gray-600 text-center mt-1 text-sm">
-                  Join the East African Community
-                </Text>
-              </View>
-              
-              {showSignup && (
-                <View className="mb-4">
-                  <Text className="text-gray-700 mb-1 font-medium">Name</Text>
-                  <TextInput
-                    className="border border-gray-300 rounded-md px-3 py-2 text-gray-800"
-                    placeholder="Your full name"
-                    value={name}
-                    onChangeText={setName}
-                  />
-                </View>
-              )}
-              
-              <View className="mb-4">
-                <Text className="text-gray-700 mb-1 font-medium">Email</Text>
-                <TextInput
-                  className="border border-gray-300 rounded-md px-3 py-2 text-gray-800"
-                  placeholder="Your email"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              </View>
-              
-              <View className="mb-4">
-                <Text className="text-gray-700 mb-1 font-medium">Password</Text>
-                <TextInput
-                  className="border border-gray-300 rounded-md px-3 py-2 text-gray-800"
-                  placeholder="Your password"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                />
-              </View>
-              
-              <TouchableOpacity
-                onPress={showLogin ? () => console.log('Login:', { email, password }) : () => console.log('Signup:', { name, email, password })}
-                className="bg-blue-600 rounded-md py-3 mb-3"
-              >
-                <Text className="text-white text-center font-semibold">
-                  {showLogin ? 'Sign In' : 'Get Started'}
-                </Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity
-                onPress={() => {
-                  setShowLogin(!showLogin);
-                  setShowSignup(!showSignup);
-                }}
-              >
-                <Text className="text-blue-600 text-center text-sm">
-                  {showLogin ? 'Need an account? Get Started' : 'Already a member? Sign In'}
-                </Text>
-              </TouchableOpacity>
+      <Layout className="bg-gradient-to-br from-blue-50 to-indigo-100">
+        <View className={`flex-1 justify-center ${isWeb ? 'max-w-md mx-auto' : ''}`}>
+          <Card className="relative">
+            <TouchableOpacity 
+              onPress={resetForms}
+              className="absolute top-2 left-2 p-2 rounded-full bg-gray-100"
+            >
+              <Text className="text-xl text-gray-600">←</Text>
+            </TouchableOpacity>
+            
+            <View className="items-center mb-6 pt-4">
+              <Logo size="medium" />
+              <Text className="text-2xl font-bold text-gray-800 mt-4">
+                {showLogin ? 'Welcome Back' : 'Join EastVerse'}
+              </Text>
+              <Text className="text-gray-600 text-center mt-2 text-sm">
+                {showLogin 
+                  ? 'Sign in to continue your journey' 
+                  : 'Be part of the East African community'}
+              </Text>
             </View>
-          </View>
-        </ScrollView>
-      </View>
+            
+            {showSignup && (
+              <InputField
+                label="Full Name"
+                value={name}
+                onChangeText={setName}
+                placeholder="Enter your full name"
+              />
+            )}
+            
+            <InputField
+              label="Email Address"
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Enter your email"
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            
+            <InputField
+              label="Password"
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Enter your password"
+              secureTextEntry
+            />
+            
+            <Button
+              title={showLogin ? 'Sign In' : 'Create Account'}
+              onPress={() => {
+                const action = showLogin ? 'Login' : 'Signup';
+                console.log(action, { name, email, password });
+              }}
+              className="mb-4"
+            />
+            
+            <TouchableOpacity
+              onPress={() => {
+                setShowLogin(!showLogin);
+                setShowSignup(!showSignup);
+              }}
+            >
+              <Text className="text-blue-600 text-center text-sm">
+                {showLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
+              </Text>
+            </TouchableOpacity>
+          </Card>
+        </View>
+      </Layout>
     );
   }
 
   return (
-    <View className="flex-1 bg-gray-100">
-      <StatusBar style="dark" />
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* Hero Section */}
-        <View className={`px-4 pt-12 pb-8 ${isWeb ? 'max-w-5xl mx-auto' : ''}`}>
-          <View className="items-center mb-6">
-            <View className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-3">
-              <Text className="text-white text-2xl font-bold">EV</Text>
-            </View>
-            <Text className={`${isWeb ? 'text-4xl' : 'text-3xl'} font-semibold text-gray-800 text-center`}>
-              EASTVERSE
-            </Text>
-            <Text className={`${isWeb ? 'text-lg' : 'text-base'} text-gray-600 text-center mt-2 max-w-2xl`}>
-              Connecting East Africa for unity and progress
-            </Text>
-          </View>
-          
-          <View className="flex-row justify-center gap-4">
-            <TouchableOpacity
-              onPress={() => setShowSignup(true)}
-              className="bg-green-600 rounded-md py-3 px-6"
-            >
-              <Text className="text-white font-semibold">Get Started</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => setShowLogin(true)}
-              className="border border-blue-600 rounded-md py-3 px-6"
-            >
-              <Text className="text-blue-600 font-semibold">Sign In</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* EAC Countries Section */}
-        <View className={`px-4 mb-8 ${isWeb ? 'max-w-5xl mx-auto' : ''}`}>
-          <Text className={`${isWeb ? 'text-3xl' : 'text-2xl'} font-semibold text-gray-800 text-center mb-6`}>
-            East African Community
+    <Layout>
+      {/* Hero Section */}
+      <HeroGradient className="rounded-2xl mb-8">
+        <View className="items-center py-16 px-4">
+          <Logo size="large" />
+          <Text className={`${isWeb ? 'text-5xl' : 'text-4xl'} font-bold text-gray-800 text-center mt-6 mb-4`}>
+            Welcome to EastVerse
           </Text>
-          <View className={`${isWeb ? 'grid grid-cols-4 gap-4' : 'flex flex-row flex-wrap justify-center gap-2'}`}>
-            {eacCountries.map((country, index) => (
-              <View key={index} className={`bg-white rounded-lg p-4 shadow-md ${isWeb ? '' : 'w-[48%]'}`}>
-                <Text className="text-3xl mb-2 text-center">{country.flag}</Text>
-                <Text className="text-base font-semibold text-gray-800 text-center">{country.name}</Text>
-                <Text className="text-sm text-gray-600 text-center">{country.capital}</Text>
-              </View>
-            ))}
+          <Text className={`${isWeb ? 'text-xl' : 'text-lg'} text-gray-600 text-center max-w-3xl mb-8 leading-relaxed`}>
+            Building bridges across East Africa through unity, innovation, and shared prosperity. 
+            Join our community working towards a brighter future for all.
+          </Text>
+          
+          <View className={`${isWeb ? 'flex-row' : 'flex-col'} gap-4 mb-8`}>
+            <Button
+              title="Join the Movement"
+              onPress={() => setShowSignup(true)}
+              variant="secondary"
+              size="large"
+            />
+            <Button
+              title="Sign In"
+              onPress={() => setShowLogin(true)}
+              variant="outline"
+              size="large"
+            />
           </View>
         </View>
+      </HeroGradient>
 
-        {/* CTA Section */}
-        <View className={`px-4 pb-8 ${isWeb ? 'max-w-4xl mx-auto' : ''}`}>
-          <View className="bg-gradient-to-r from-green-600 to-blue-600 rounded-lg p-6">
-            <Text className={`${isWeb ? 'text-2xl' : 'text-xl'} font-semibold text-white text-center mb-4`}>
-              Join the Movement
+      {/* Statistics Section */}
+      <View className="py-8">
+        <SectionHeader 
+          title="East Africa by Numbers"
+          subtitle="Discover the scale and diversity of our beautiful region"
+        />
+        <View className={`${isWeb ? 'grid grid-cols-4 gap-6' : 'flex-row flex-wrap justify-between'}`}>
+          {statistics.map((stat, index) => (
+            <StatisticCard 
+              key={index} 
+              statistic={stat} 
+              className={`${isWeb ? '' : 'w-[48%] mb-4'}`}
+            />
+          ))}
+        </View>
+      </View>
+
+      {/* EAC Countries Section */}
+      <View className="py-8">
+        <SectionHeader 
+          title="East African Community"
+          subtitle="Eight nations united by shared values, diverse cultures, and common goals"
+        />
+        <View className={`${isWeb ? 'grid grid-cols-4 gap-6' : 'flex-row flex-wrap justify-between'}`}>
+          {eacCountries.map((country, index) => (
+            <CountryCard
+              key={index}
+              country={country}
+              onPress={handleCountryPress}
+              className={`${isWeb ? '' : 'w-[48%] mb-4'}`}
+            />
+          ))}
+        </View>
+      </View>
+
+      {/* Features Section */}
+      <View className="py-8">
+        <SectionHeader 
+          title="Our Mission"
+          subtitle="Working together to create a prosperous and united East Africa"
+        />
+        <View className={`${isWeb ? 'grid grid-cols-3 gap-6' : 'gap-6'}`}>
+          {features.map((feature, index) => (
+            <FeatureCard
+              key={index}
+              icon={feature.icon}
+              title={feature.title}
+              description={feature.description}
+              className={`${isWeb ? '' : 'mb-4'}`}
+            />
+          ))}
+        </View>
+      </View>
+
+      {/* Testimonials Section */}
+      <View className="py-8">
+        <SectionHeader 
+          title="Voices of Change"
+          subtitle="Hear from East Africans who are making a difference in their communities"
+        />
+        <View className={`${isWeb ? 'grid grid-cols-1 md:grid-cols-3 gap-6' : 'gap-6'}`}>
+          {testimonials.map((testimonial, index) => (
+            <TestimonialCard
+              key={index}
+              quote={testimonial.quote}
+              author={testimonial.author}
+              title={testimonial.title}
+              country={testimonial.country}
+              avatar={testimonial.avatar}
+              className={`${isWeb ? '' : 'mb-4'}`}
+            />
+          ))}
+        </View>
+      </View>
+
+      {/* Call to Action Section */}
+      <View className="py-8">
+        <GradientCard className="text-center">
+          <View className="items-center">
+            <Text className={`${isWeb ? 'text-3xl' : 'text-2xl'} font-bold text-white mb-4`}>
+              Ready to Make a Difference?
             </Text>
-            <Text className="text-white text-center mb-4 text-sm">
-              Take the pledge to support East African unity and progress
+            <Text className="text-white text-center mb-6 text-lg leading-relaxed max-w-2xl opacity-90">
+              Join thousands of East Africans who are already part of this movement. 
+              Together, we can build a stronger, more prosperous region for future generations.
             </Text>
             <TouchableOpacity
               onPress={() => setShowSignup(true)}
-              className="bg-white rounded-md py-3 px-6 mx-auto w-fit"
+              className="bg-white rounded-lg px-8 py-4"
+              activeOpacity={0.9}
             >
-              <Text className="text-blue-600 font-semibold">Take the Pledge</Text>
+              <Text className="text-blue-600 font-semibold text-lg">
+                Take the Pledge Today
+              </Text>
             </TouchableOpacity>
           </View>
+        </GradientCard>
+      </View>
+
+      {/* Footer */}
+      <View className="py-8 border-t border-gray-200 mt-8">
+        <View className="items-center">
+          <Logo size="small" />
+          <Text className="text-gray-600 text-center mt-4 text-sm">
+            © 2025 EastVerse. Building a united East Africa, one connection at a time.
+          </Text>
         </View>
-      </ScrollView>
-    </View>
+      </View>
+    </Layout>
   );
 }
